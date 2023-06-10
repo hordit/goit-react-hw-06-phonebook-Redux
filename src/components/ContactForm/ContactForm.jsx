@@ -7,21 +7,29 @@ import {
   InputStyled,
   Label,
 } from './ContactForm.styled';
+import { useDispatch } from 'react-redux';
+import { addContact } from 'redux/actions';
 
 export const ContactForm = ({ onAdd }) => {
+  const dispatch = useDispatch();
+
+  const onSubmit = (values, actions) => {
+    const newContact = {
+      ...values,
+      id: nanoid(),
+    };
+    dispatch(addContact(newContact));
+    actions.resetForm();
+    onAdd(newContact);
+  };
+
   return (
     <Formik
       initialValues={{
         name: '',
         number: '',
       }}
-      onSubmit={(values, actions) => {
-        onAdd({
-          ...values,
-          id: nanoid(),
-        });
-        actions.resetForm();
-      }}
+      onSubmit={onSubmit}
     >
       <FormStyled>
         <Label>

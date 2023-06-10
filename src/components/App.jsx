@@ -1,21 +1,20 @@
-import { useEffect, useState } from 'react';
 import { Layout } from './Layout';
 import { GlobalStyle } from './GlobalStyles';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 import { capitalizedName } from './Utils/capitalizedName';
-import { getContacts } from './Utils/getContacts';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFilter, getContacts } from 'redux/selectors';
+import { addContact, deleteContact, setFilter } from 'redux/actions';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(getContacts);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = newContact => {
+  const addContactHandler = newContact => {
+    console.log('Adding contact:', newContact);
     const isNameExist = contacts.find(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
@@ -26,21 +25,20 @@ export const App = () => {
     };
 
     if (isNameExist) {
+      console.log('Duplicate name:', isNameExist);
       alert(`${capitalizedName(newContact.name)} is already in contacts.`);
       return;
     }
 
-    setContacts(prevState => [...prevState, normalizedName]);
+    dispatch(addContact(normalizedName));
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
-    );
+  const deleteContactHandler = contactId => {
+    dispatch(deleteContact(contactId));
   };
 
-  const changeFilter = e => {
-    setFilter(e.currentTarget.value);
+  const changeFilterHandler = e => {
+    dispatch(setFilter(e.currentTarget.value));
   };
 
   const getVisibleContacts = (contacts, filter) => {
@@ -53,16 +51,16 @@ export const App = () => {
     );
   };
 
-  const visibleContacts = getVisibleContacts(contacts, filter);
+  const visibleContacts = getVisibleContacts(contacts, filter.toString());
 
   return (
     <Layout>
       <GlobalStyle />
       <h1>Phonebook</h1>
-      <ContactForm onAdd={addContact} />
+      <ContactForm onAdd={addContactHandler} />
       <h2>Contacts</h2>
-      <Filter value={filter} onChange={changeFilter} />
-      <ContactList contacts={visibleContacts} onDelete={deleteContact} />
+      <Filter value={filter} onChange={changeFilterHandler} />
+      <ContactList contacts={visibleContacts} onDelete={deleteContactHandler} />
     </Layout>
   );
 };
