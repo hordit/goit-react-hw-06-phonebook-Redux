@@ -1,5 +1,4 @@
-import { Formik, Field } from 'formik';
-import { nanoid } from 'nanoid';
+import { Formik, Field, ErrorMessage } from 'formik';
 import PropTypes from 'prop-types';
 import {
   ButtonAdd,
@@ -7,21 +6,28 @@ import {
   InputStyled,
   Label,
 } from './ContactForm.styled';
-import { useDispatch } from 'react-redux';
-import { addContact } from 'redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, getContacts } from 'redux/contactsSlice';
+import { isExistName } from 'components/Utils/getVisibleContacts';
+import { nanoid } from 'nanoid';
 
-export const ContactForm = ({ onAdd }) => {
+export const ContactForm = () => {
   const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
-  const onSubmit = (values, actions) => {
-    const newContact = {
-      ...values,
-      id: nanoid(),
-    };
-    dispatch(addContact(newContact));
-    actions.resetForm();
-    onAdd(newContact);
-  };
+  const handleSubmit = (values, actions) => {
+    const {name, number} = values;
+ 
+    if (!isExistName(name, contacts)) {
+     dispatch(
+       addContact({
+         name, number,
+         id: nanoid(),
+       })
+     );
+    }
+     actions.resetForm();
+   }
 
   return (
     <Formik
@@ -29,28 +35,32 @@ export const ContactForm = ({ onAdd }) => {
         name: '',
         number: '',
       }}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       <FormStyled>
         <Label>
           Name
-          <InputStyled
+          <Field
+            as={InputStyled}
             type="text"
             name="name"
             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
           />
+          <ErrorMessage name="name" component="div" />
         </Label>
         <Label>
           Number
-          <InputStyled
+          <Field
+            as={InputStyled}
             type="tel"
             name="number"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
           />
+          <ErrorMessage name="number" component="div" />
         </Label>
         <div>
           <ButtonAdd type="submit">Add contact</ButtonAdd>
@@ -61,12 +71,5 @@ export const ContactForm = ({ onAdd }) => {
 };
 
 ContactForm.propTypes = {
-  onAdd: PropTypes.func.isRequired,
-};
-
-Field.propTypes = {
-  type: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  pattern: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func,
 };
