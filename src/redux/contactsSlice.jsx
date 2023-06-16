@@ -1,10 +1,10 @@
-// import storage from 'redux-persist/lib/storage';
-// import {persistReducer} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import {persistReducer} from 'redux-persist';
 import { nanoid } from 'nanoid';
 import contactsData from '../Data/Contacts.json';
 
-export const getContacts = state => state.contacts.items;
-export const getFilter = state => state.contacts.filter;
+export const getContacts = state => state.items;
+export const getFilter = state => state.filter;
 
 const initialState = {
   items: contactsData,
@@ -53,10 +53,10 @@ export const contactsReducer = (state = initialState, action) => {
   }
 };
 
-// const persistConfig = {
-//   key: 'root',
-//   storage,
-//   blacklist: ['filter'],
-// };
+const persistConfig = {
+  key: 'root',
+  storage,
+  blacklist: ['filter'],
+};
 
-// export const persistedReducer = persistReducer(persistConfig, contactsReducer);
+export const persistedReducer = persistReducer(persistConfig, contactsReducer);

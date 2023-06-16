@@ -9,7 +9,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact, getContacts} from 'redux/contactsSlice';
 import { isExistName } from 'Utils/getVisibleContacts';
-import { nanoid } from 'nanoid';
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
@@ -17,14 +16,9 @@ export const ContactForm = () => {
 
   const handleSubmit = (values, actions) => {
     const {name, number} = values;
- 
+    
     if (!isExistName(name, contacts)) {
-     dispatch(
-       addContact({
-         name, number,
-         id: nanoid(),
-       })
-     );
+     dispatch(addContact(name, number));
     }
      actions.resetForm();
    }
