@@ -1,15 +1,15 @@
-import contactsData from '../Data/Contacts.json';
-import storage from 'redux-persist/lib/storage';
-import {persistReducer} from 'redux-persist';
+// import storage from 'redux-persist/lib/storage';
+// import {persistReducer} from 'redux-persist';
 import { nanoid } from 'nanoid';
+import contactsData from '../Data/Contacts.json';
+
+export const getContacts = state => state.contacts.items;
+export const getFilter = state => state.contacts.filter;
 
 const initialState = {
   items: contactsData,
   filter: '',
 };
-
-export const getContacts = state => state.contacts.items;
-export const getFilter = state => state.contacts.filter;
 
 export const addContact = (name, number) => ({
   type: 'contacts/addContact',
@@ -30,7 +30,8 @@ export const setFilter = filter => ({
   payload: filter,
 });
 
-const contactsReducer = (state = initialState, action) => {
+export const contactsReducer = (state = initialState, action) => {
+   console.log('Current state:', state);
   switch (action.type) {
     case 'contacts/addContact':
       return {
@@ -52,10 +53,10 @@ const contactsReducer = (state = initialState, action) => {
   }
 };
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  blacklist: ['filter'],
-};
+// const persistConfig = {
+//   key: 'root',
+//   storage,
+//   blacklist: ['filter'],
+// };
 
-export const persistedReducer = persistReducer(persistConfig, contactsReducer);
+// export const persistedReducer = persistReducer(persistConfig, contactsReducer);

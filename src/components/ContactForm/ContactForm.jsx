@@ -7,8 +7,8 @@ import {
   Label,
 } from './ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, getContacts } from 'redux/contactsSlice';
-import { isExistName } from 'components/Utils/getVisibleContacts';
+import { addContact, getContacts} from 'redux/contactsSlice';
+import { isExistName } from 'Utils/getVisibleContacts';
 import { nanoid } from 'nanoid';
 
 export const ContactForm = () => {
